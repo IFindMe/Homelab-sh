@@ -7,7 +7,7 @@ SERVICE_NAME="wikijs"
 # Get the subnet from homelab-network and set last octet to 9
 IP_ADDRESS=$(docker network inspect homelab-network | jq -r '.[0].IPAM.Config[0].Subnet' | cut -d. -f1-3).9
 VOLUME_BASE="/srv/docker/wikijs"
-DB_HOST="172.18.0.8"
+DB_HOST=$(docker network inspect homelab-network | jq -r '.[0].IPAM.Config[0].Subnet' | cut -d. -f1-3).8
 
 echo "Starting $SERVICE_NAME service..."
 
