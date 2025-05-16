@@ -3,21 +3,25 @@
 # Script to start all homelab services
 
 echo "=== Starting Homelab Services ==="
-echo "Looking for service scripts (srv-*.sh)..."
+echo "Looking for homelab-network script homelab-network.sh"
 
-# create a Docker network if it doesn't exist from homelab-network.sh
-./homelab-network.sh
+
+#do search, if not found, exit
+NETWORK_SCRIPT=$(find / -type f -name "homelab-network.sh" 2>/dev/null | head -n 1)
+if [ -z "$NETWORK_SCRIPT" ]; then
+    echo "homelab-network.sh not found! Exiting."
+    exit 1
+fi
+chmod +x "$NETWORK_SCRIPT"
+bash "$NETWORK_SCRIPT"
 if [ $? -ne 0 ]; then
     echo "Failed to create Docker network. Exiting."
     exit 1
 fi
 
-# Get the directory of this script
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-cd "$SCRIPT_DIR"
-
-# Find all service scripts
-SERVICE_SCRIPTS=$(find . -name "srv-*.sh" -type f)
+echo "looking for services scripts (srv-*.sh)..."
+# Find all service scripts (dynamic path) 
+SERVICE_SCRIPTS=$(find / -type f -name "srv-*.sh" 2>/dev/null | head -n 1)
 SCRIPT_COUNT=$(echo "$SERVICE_SCRIPTS" | wc -l)
 
 if [ -z "$SERVICE_SCRIPTS" ]; then
@@ -29,7 +33,9 @@ echo "Found $SCRIPT_COUNT service scripts."
 echo "Starting services..."
 
 # Make all scripts executable
-chmod +x srv-*.sh
+for script in $SERVICE_SCRIPTS; do
+    chmod +x "$script"
+done
 
 # Run each service script
 for script in $SERVICE_SCRIPTS; do
