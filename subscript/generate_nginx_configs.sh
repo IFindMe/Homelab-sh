@@ -4,7 +4,6 @@ NGINX_CONF_DIR="/srv/docker/nginx/etc/nginx/conf.d"
 SSL_CERT="/etc/nginx/conf.d/keys/nginx.crt"
 SSL_KEY="/etc/nginx/conf.d/keys/nginx.key"
 
-mkdir -p "$NGINX_CONF_DIR"
 
 docker ps --format '{{.ID}} {{.Names}}' | while read -r CONTAINER_ID CONTAINER_NAME; do
     CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$CONTAINER_ID")
