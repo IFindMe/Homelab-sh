@@ -1,30 +1,25 @@
 #!/bin/bash
 
-NGINX_CONF_DIR="/srv/docker/nginx/etc/nginx/conf.d"
-SSL_CERT="/etc/nginx/conf.d/keys/nginx.crt"
-SSL_KEY="/etc/nginx/conf.d/keys/nginx.key"
+CONF_DIR="/srv/docker/nginx/etc/nginx/conf.d"
 
+read -p "Enter server name (e.g., myapp): " NAME
+read -p "Enter backend IP: " IP
+read -p "Enter backend port: " PORT
 
-docker ps --format '{{.ID}} {{.Names}}' | while read -r CONTAINER_ID CONTAINER_NAME; do
-    CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$CONTAINER_ID")
-    CONTAINER_PORT=$(docker port "$CONTAINER_ID" | head -n1 | cut -d':' -f2)
+CONF_PATH="$CONF_DIR/$NAME.conf"
 
-    if [[ -z "$CONTAINER_IP" || -z "$CONTAINER_PORT" ]]; then
-        echo "Skipping $CONTAINER_NAME – missing IP or port."
-        continue
-    fi
+mkdir -p "$CONF_DIR"
 
-    CONF_PATH="$NGINX_CONF_DIR/$CONTAINER_NAME.conf"
-    cat > "$CONF_PATH" <<EOF
+cat > "$CONF_PATH" <<EOF
 server {
     listen 443 ssl;
-    server_name $CONTAINER_NAME.home.net;
+    server_name $NAME.home.net;
 
-    ssl_certificate $SSL_CERT;
-    ssl_certificate_key $SSL_KEY;
+    ssl_certificate /etc/nginx/conf.d/keys/nginx.crt;
+    ssl_certificate_key /etc/nginx/conf.d/keys/nginx.key;
 
     location / {
-        proxy_pass http://$CONTAINER_IP:$CONTAINER_PORT/;
+        proxy_pass http://$IP:$PORT/;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -33,13 +28,10 @@ server {
 
 server {
     listen 80;
-    server_name $CONTAINER_NAME.home.net;
+    server_name $NAME.home.net;
 
     return 301 https://\$host\$request_uri;
 }
 EOF
 
-    echo "Generated config for $CONTAINER_NAME at $CONF_PATH"
-done
-
-nginx -s reload
+echo "✅ Config written to $CONF_PATH"
