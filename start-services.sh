@@ -5,6 +5,13 @@
 echo "=== Starting Homelab Services ==="
 echo "Looking for service scripts (srv-*.sh)..."
 
+# create a Docker network if it doesn't exist from homelab-network.sh
+./homelab-network.sh
+if [ $? -ne 0 ]; then
+    echo "Failed to create Docker network. Exiting."
+    exit 1
+fi
+
 # Get the directory of this script
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd "$SCRIPT_DIR"
