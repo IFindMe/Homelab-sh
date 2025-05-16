@@ -8,7 +8,7 @@ sudo apt-get update
 curl -fsSL https://tailscale.com/install.sh | sh
 
 # Enable and start Tailscale service
-sudo tailscaled& > /dev/null
+sudo tailscaled >/dev/null 2>&1 &
 
 # Authenticate Tailscale (manual step)
 sudo tailscale up  --advertise-routes=$SUBNET
