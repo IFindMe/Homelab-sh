@@ -3,7 +3,7 @@
 SRC_DIR=$(find / -type d -name "Homelab" 2>/dev/null | head -n 1)/config
 DEST_DIR="/srv/docker"
 
-FOLDERS=("pihole" "nginx")
+FOLDERS=( "nginx")
 
 for folder in "${FOLDERS[@]}"; do
     if [ -d "$SRC_DIR/$folder" ]; then
