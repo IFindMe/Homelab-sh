@@ -13,7 +13,18 @@ if [ -z "$NETWORK_SCRIPT" ]; then
 fi
 
 chmod +x "$NETWORK_SCRIPT"
-bash "$NETWORK_SCRIPT"
+
+#if network is already created, skip
+if docker network ls --format '{{.Name}}' | grep -wq "homelab-network"; then
+    echo "[+] Docker network 'homelab-network' already exists. Skipping creation."
+else
+    echo "[+] Creating Docker network 'homelab-network'..."
+    bash "$NETWORK_SCRIPT"
+    if [ $? -ne 0 ]; then
+        echo "[!] Network creation failed. Aborting."
+        exit 1
+    fi
+fi
 if [ $? -ne 0 ]; then
     echo "[!] Network setup failed. Aborting."
     exit 1
@@ -23,7 +34,7 @@ echo "[+] Network initialized."
 
 # Locate service scripts
 echo "[*] Searching for service scripts (srv-*.sh)..."
-SERVICE_SCRIPTS=$(find / -type f -name "srv-*.sh" 2>/dev/null | head -n 1)
+SERVICE_SCRIPTS=$(find / -type f -name "srv-*.sh" 2>/dev/null)
 SCRIPT_COUNT=$(echo "$SERVICE_SCRIPTS" | wc -l)
 
 if [ -z "$SERVICE_SCRIPTS" ]; then
@@ -41,8 +52,14 @@ done
 # Execute each service script
 for script in $SERVICE_SCRIPTS; do
     echo ""
-    echo ">>> Executing: $script"
-    bash "$script"
+    echo ">>> Ready to execute: $script"
+    read -p "Proceed with this service? [y/N]: " confirm
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        bash "$script"
+    else
+        echo "Skipped: $script"
+        continue
+    fi
     
     if [ $? -eq 0 ]; then
         echo "✅ Success: $script"
