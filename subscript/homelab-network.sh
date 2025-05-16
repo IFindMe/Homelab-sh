@@ -3,14 +3,16 @@
 # Script to create a Docker network named 'homelab-network'
 
 echo "=== Creating Functional Docker Network ==="
-NETWORK_NAME="homelab-network"
-SUBNET="172.25.0.0/24"
-GATEWAY="172.25.0.1"
+read -p "Enter network name [homelab-network]: " NETWORK_NAME
+NETWORK_NAME=${NETWORK_NAME:-homelab-network}
+
+read -p "Enter subnet [172.25.0.0/24]: " SUBNET
+SUBNET=${SUBNET:-172.25.0.0/24}
+
 
 docker network create \
   --driver=bridge \
   --subnet="$SUBNET" \
-  --gateway="$GATEWAY" \
   --opt com.docker.network.bridge.name=br-homelab \
   "$NETWORK_NAME"
 
