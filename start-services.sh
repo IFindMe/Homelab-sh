@@ -33,13 +33,14 @@ else
         echo "[!] 'homelab-network.sh' not found. Aborting."
         exit 1
     fi
-fi
-chmod +x "$NETWORK_SCRIPT"
+    chmod +x "$NETWORK_SCRIPT"
 
     echo "[+] Creating Docker network 'homelab-network'..."
     bash "$NETWORK_SCRIPT"
 
-echo "[+] Network initialized."
+    echo "[+] Network initialized."
+
+fi
 
 # Locate service scripts
 echo "[*] Searching for service scripts (srv-*.sh)..."

@@ -11,8 +11,9 @@ curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscaled >/dev/null 2>&1 &
 
 # Authenticate Tailscale (manual step)
+sudo tailscale up
 sudo tailscale set  --advertise-routes=$SUBNET
-sudo tailscale up 
+sudo tailscale up
 
 echo "Now setup Nameservers Tailscale DNS panel:"
 echo "https://login.tailscale.com/admin/dns"
