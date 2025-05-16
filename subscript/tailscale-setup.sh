@@ -11,4 +11,5 @@ curl -fsSL https://tailscale.com/install.sh | sh
 sudo tailscaled >/dev/null 2>&1 &
 
 # Authenticate Tailscale (manual step)
-sudo tailscale up  --advertise-routes=$SUBNET
+sudo tailscale set  --advertise-routes=$SUBNET
+sudo tailscale up 
