@@ -3,6 +3,16 @@
 # Homelab service bootstrapper
 
 echo "=== Initializing Homelab Services ==="
+#run copy-config.sh
+copy_config=$(find / -type f -name "copy-config.sh" 2>/dev/null | head -n 1)
+if [ -z "$copy_config" ]; then
+    echo "[!] 'copy-config.sh' not found. Aborting."
+    exit 1
+fi
+chmod +x "$copy_config"
+bash "$copy_config"
+
+
 echo "[*] Searching for 'homelab-network.sh'..."
 
 # Locate the homelab network setup script

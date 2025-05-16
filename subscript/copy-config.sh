@@ -1,10 +1,8 @@
 #!/bin/bash
 
-# Define source and destination directories
-SRC_DIR=$(find /home/hk/tests/Homelab-sh/Homelab-sh -type d -name "HOMELAB-SH" -exec bash -c 'echo {}/config/*' \; | head -n1)
+SRC_DIR=$(find / -type d -name "Homelab" 2>/dev/null | head -n 1)/config
 DEST_DIR="/srv/docker"
 
-# List of folders to copy
 FOLDERS=("pihole" "nginx")
 
 for folder in "${FOLDERS[@]}"; do
