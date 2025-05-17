@@ -42,6 +42,24 @@ else
 
 fi
 
+
+#check if nginx is running
+if docker ps --format '{{.Names}}' | grep -wq "nginx"; then
+    echo "[+] Docker container 'nginx' is already running"
+else
+    echo "[!] Docker container 'nginx' not found."
+    # Locate the nginx startup script
+    NGINX_SCRIPT=$(find / -type f -name "start-nginx.sh" 2>/dev/null | head -n 1)
+    if [ -z "$NGINX_SCRIPT" ]; then
+        echo "[!] 'start-nginx.sh' not found. Aborting."
+        exit 1
+    fi
+    chmod +x "$NGINX_SCRIPT"
+
+    echo "[+] Starting Nginx..."
+    bash "$NGINX_SCRIPT"
+fi
+
 # Locate service scripts
 echo "[*] Searching for service scripts (srv-*.sh)..."
 SERVICE_SCRIPTS=$(find / -type f -name "srv-*.sh" 2>/dev/null)

@@ -15,6 +15,16 @@ fi
 
 CONF_DIR="/srv/docker/nginx/etc/nginx/conf.d"
 
+#search for record-domains.sh
+RECORD_DOMAINS_SCRIPT=$(find / -type f -name "record-domains.sh" 2>/dev/null | head -n 1)
+if [ -z "$RECORD_DOMAINS_SCRIPT" ]; then
+    echo "[!] 'record-domains.sh' not found, you need to add manual record domain."
+else
+    chmod +x "$RECORD_DOMAINS_SCRIPT"
+    
+fi
+nginx_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx)
+
 while true; do
     
 echo "Available running Docker containers (name, IP, and ports):"
@@ -64,6 +74,8 @@ server {
 EOF
 
     echo "✅ Config written to $CONF_PATH"
+    echo "add $NAME.home.net to record domains"
+    bash $RECORD_DOMAINS_SCRIPT "$NAME.home.net" "$nginx_IP"
 
     read -p "Add another server? (Y/N): " CONT
     [[ "${CONT^^}" != "Y" ]] && break

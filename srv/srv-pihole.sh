@@ -27,6 +27,8 @@ docker run -d \
   --cap-add=NET_ADMIN \
   -v $VOLUME_BASE/etc/pihole:/etc/pihole \
   -v $VOLUME_BASE/etc/dnsmasq.d:/etc/dnsmasq.d \
+  -p 53:53/tcp \
+  -p 53:53/udp \
   pihole/pihole:latest
 
 echo "$SERVICE_NAME service started successfully!"
