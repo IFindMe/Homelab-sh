@@ -83,8 +83,8 @@ echo "=== All Services Launched ==="
 
 #ask if user wants to set pihole password if pihole name is found in the list "SERVICE_SCRIPTS"
 if echo "$SERVICE_SCRIPTS" | grep -q "pihole"; then
-    echo "[*] Pi-hole service detected."
-    read -p "Do you want to set the Pi-hole admin password? [y/N]: " set_pihole_pass
+    echo "[*] Pi-hole service script detected."
+    read -p "Do you want to set the Pi-hole admin password? Enter 'y' if you already lunch pi-hole container [y/N]: " set_pihole_pass
     if [[ "$set_pihole_pass" =~ ^[Yy]$ ]]; then
         # Locate the Pi-hole password script
         PIHOLE_SCRIPT=$(find / -type f -name "change-pihole-password.sh" 2>/dev/null | head -n 1)
